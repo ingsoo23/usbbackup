@@ -5,15 +5,14 @@
 #include <algorithm>
 #include <windows.h>
 #include <io.h>
-
+#include <ctime>
+#include <sys/stat.h>
+#define LOG "mybackup.log"
 using namespace std;
 
 void fileCopy(const char* src, const char* dst) ;
 
-#include <ctime>
-#include <sys/stat.h>
-#define LOG "mybackup.log"
-
+int isFileOrDir(const char* s);
 using namespace std;
 ofstream log (LOG, ios::ate);
 
@@ -65,7 +64,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 
 	if (handle == -1)
 	{
-		cout << "There were no files.\n";
+		cout << "There were no files in" <<srcfile <<endl;
 		Log("There were no files.\n");
 		return;
 	}
@@ -77,20 +76,28 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; }
 		else {
 			fd2 = findFile(dstpath, fd.name, a);
-			if (a == -1) {
-				fileCopy(srcfull.c_str(), dstfull.c_str());
-				cout << fd.name << endl;
-				Log(fd.name, "is made.");
+			if(isFileOrDir(srcfull.c_str())==1 ){ // it's file.
+                if (a == -1) {
+                    fileCopy(srcfull.c_str(), dstfull.c_str());
+                    cout << fd.name << endl;
+                    Log(fd.name, "is made.");
 
+                }
+                else if (fd2.time_write >= fd.time_write) {
+                        cout << fd.name << "이미 존재" << endl;
+                        Log(fd.name, "is existed.");
+                }
+                else {
+                    fileCopy(srcfull.c_str(), dstfull.c_str());
+                    cout << fd.name << "is changed" << endl;
+                    Log(fd.name, "is changed.");
+                }
 			}
-			else if (fd2.time_write >= fd.time_write) {
-                    cout << fd.name << "이미 존재" << endl;
-                    Log(fd.name, "is existed.");
+			else if (isFileOrDir(srcfull.c_str())==0){ // it's folder
+                allFileCopy((srcfull +"\\"+ fd2.name).c_str(), (dstfull +"\\"+fd2.name).c_str());
 			}
-			else {
-				fileCopy(srcfull.c_str(), dstfull.c_str());
-				cout << fd.name << "is changed" << endl;
-				Log(fd.name, "is changed.");
+			else{// error
+                Log("ERROR");
 			}
 		}
 		srcfull.clear();
@@ -102,7 +109,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	return;
 }
 
-int isFileOrDir(char* s) {
+int isFileOrDir(const char* s) {
 	_finddata_t c_file;
 	intptr_t hFile;
 	int result;
