@@ -7,6 +7,7 @@
 #include <io.h>
 #include <ctime>
 #include <sys/stat.h>
+#include <direct.h>
 #define LOG "mybackup.log"
 using namespace std;
 
@@ -52,6 +53,17 @@ _finddata_t findFile(const char* path, const char* filename, int& x) {
 	return fd;
 }
 
+bool dirExists(const char* dirName_in)
+{
+  DWORD ftyp = GetFileAttributesA(dirName_in);
+  if (ftyp == INVALID_FILE_ATTRIBUTES)
+    return false;  //something is wrong with your path!
+
+  if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+    return true;   // this is a directory!
+
+  return false;    // this is not a directory!
+}
 void allFileCopy(const char* srcpath, const char* dstpath)
 {
 	_finddata_t fd, fd2;
@@ -59,7 +71,12 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	int result = 1;
 	int a = 1;
 	string srcfile, srcfull, dstfull;
+    cout<<srcpath << "\n" << dstpath << "test\n" ;
 	srcfile = (string)srcpath + "\\*.*"; // find all files in srcpath
+	if(!dirExists(dstpath)){
+
+        mkdir(dstpath);
+	}
 	handle = _findfirst(srcfile.c_str(), &fd);
 
 	if (handle == -1)
@@ -96,7 +113,8 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 			else if (isFileOrDir(srcfull.c_str())==0){ // it's folder
                 cout<<fd.name <<"is a folder."<< endl;
                 Log(fd.name, "is a folder.");
-                allFileCopy((srcfull +"\\"+ fd2.name).c_str(), (dstfull +"\\"+fd2.name).c_str());
+                mkdir((dstfull).c_str());
+                allFileCopy((srcfull).c_str(), (dstfull).c_str());
 			}
 			else{// error
                 Log("ERROR");
