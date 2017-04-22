@@ -6,6 +6,11 @@
 #include <windows.h>
 #include <io.h>
 #include <sys/stat.h>
+<<<<<<< HEAD
+//nooooo
+//ys commit
+=======
+>>>>>>> origin/master
 using namespace std;
 
 bool fileExists(const char* filename) {
