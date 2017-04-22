@@ -82,16 +82,12 @@ int main(int argc, char** argv) {
 		cerr << "ERROR" << endl;
 		return -1;
 	}
-	string inst, srcpath, dstpath;
+	string srcpath, dstpath;
 
-	srcpath = "C:\\Users\\KYS\\Desktop\\src";
-	dstpath = "C:\\Users\\KYS\\Desktop\\dst";
+	srcpath = argv[1];
+	dstpath = argv[2];
 
-	cin >> inst;
-
-	if (inst == "mybackup") {
-		allFileCopy(srcpath.c_str(), dstpath.c_str());
-	}
+    allFileCopy(srcpath.c_str(), dstpath.c_str());
 
 	return 0;
 }
