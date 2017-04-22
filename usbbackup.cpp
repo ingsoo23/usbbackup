@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void fileCopy(const char* src, const char* dst) {
+void fileCopy(const char* src, const char* dst) ;
 
 #include <ctime>
 #include <sys/stat.h>
@@ -16,11 +16,6 @@ void fileCopy(const char* src, const char* dst) {
 
 using namespace std;
 ofstream log (LOG, ios::ate);
-bool fileExists(const char* filename) {
-	struct stat buf;
-	if (stat(filename, &buf) != -1) return true;
-	return false;
-}
 
 void Log(const char* str1, const char* str2){
     time_t t = time(0);
@@ -36,7 +31,7 @@ void Log(const char* str){
     log << noew <<" : " << str << endl;
 }
 
-int fileCopy(const char* src, const char* dst) {
+void fileCopy(const char* src, const char* dst) {
 	ifstream fin(src, ios::binary);
 	ofstream fout(dst, ios::binary);
 
@@ -91,11 +86,11 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 			else if (fd2.time_write >= fd.time_write) {
                     cout << fd.name << "이미 존재" << endl;
                     Log(fd.name, "is existed.");
-
+			}
 			else {
 				fileCopy(srcfull.c_str(), dstfull.c_str());
 				cout << fd.name << "is changed" << endl;
-				Log(fd.name, "is changed.")
+				Log(fd.name, "is changed.");
 			}
 		}
 		srcfull.clear();
@@ -124,17 +119,18 @@ int isFileOrDir(char* s) {
 	return result;
 }
 
-int main() {
-	string inst, srcpath, dstpath;
 
-	srcpath = "C:\\Users\\KYS\\Desktop\\src";
-	dstpath = "C:\\Users\\KYS\\Desktop\\dst";
+int main(int argc, char** argv) {
+	if (argc!= 3){
+		cerr << "ERROR" << endl;
+		return -1;
+	}
+	string srcpath, dstpath;
 
-	// cin >> inst;
+	srcpath = argv[1];
+	dstpath = argv[2];
 
-	// if (inst == "mybackup") {
-		allFileCopy(srcpath.c_str(), dstpath.c_str());
-	// }
+    allFileCopy(srcpath.c_str(), dstpath.c_str());
 
 	return 0;
 }
