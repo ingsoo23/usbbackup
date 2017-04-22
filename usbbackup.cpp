@@ -5,10 +5,40 @@
 #include <algorithm>
 #include <windows.h>
 #include <io.h>
+<<<<<<< HEAD
 
 using namespace std;
 
 void fileCopy(const char* src, const char* dst) {
+=======
+#include <ctime>
+#include <sys/stat.h>
+#define LOG "mybackup.log"
+
+using namespace std;
+ofstream log (LOG, ios::ate);
+bool fileExists(const char* filename) {
+	struct stat buf;
+	if (stat(filename, &buf) != -1) return true;
+	return false;
+}
+
+void Log(const char* str1, const char* str2){
+    time_t t = time(0);
+    char *noew = ctime(&t);
+  //  ofstream fout (LOG, ios::ate);
+    log << noew <<" : " << str1 <<str2 << endl;
+}
+
+void Log(const char* str){
+    time_t t = time(0);
+    char *noew = ctime(&t);
+  //  ofstream fout (LOG, ios::ate);
+    log << noew <<" : " << str << endl;
+}
+
+int fileCopy(const char* src, const char* dst) {
+>>>>>>> origin/master
 	ifstream fin(src, ios::binary);
 	ofstream fout(dst, ios::binary);
 
@@ -42,7 +72,12 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 
 	if (handle == -1)
 	{
+<<<<<<< HEAD
 		cout << "There were no files.\n";
+=======
+		printf("There were no files.\n");
+		Log("There were no files.\n");
+>>>>>>> origin/master
 		return;
 	}
 
@@ -50,6 +85,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	{
 		srcfull = (string)srcpath + "\\" + fd.name;
 		dstfull = (string)dstpath + "\\" + fd.name;
+<<<<<<< HEAD
 		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; }
 		else {
 			fd2 = findFile(dstpath, fd.name, a);
@@ -62,6 +98,16 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 				fileCopy(srcfull.c_str(), dstfull.c_str());
 				cout << fd.name << "¼öÁ¤" << endl;
 			}
+=======
+		if (!fileExists(dstfull.c_str())) {
+			x = fileCopy(srcfull.c_str(), dstfull.c_str());
+			cout << fd.name << "is copied." << endl;
+			Log(fd.name, "is copied.");
+		}
+		else{
+            cout << fd.name << " is existed." << endl;
+            Log(fd.name, " is existed.");
+>>>>>>> origin/master
 		}
 		srcfull.clear();
 		dstfull.clear();
