@@ -8,18 +8,27 @@
 #include <ctime>
 #include <sys/stat.h>
 #define LOG "mybackup.log"
-using namespace std;
 
+using namespace std;
+ofstream log (LOG, ios::ate);
 bool fileExists(const char* filename) {
 	struct stat buf;
 	if (stat(filename, &buf) != -1) return true;
 	return false;
 }
 
+void Log(const char* str1, const char* str2){
+    time_t t = time(0);
+    char *noew = ctime(&t);
+  //  ofstream fout (LOG, ios::ate);
+    log << noew <<" : " << str1 <<str2 << endl;
+}
+
 void Log(const char* str){
     time_t t = time(0);
-    ofstream fout (LOG, ios::ate);
-    fout << t <<":" << str << endl;
+    char *noew = ctime(&t);
+  //  ofstream fout (LOG, ios::ate);
+    log << noew <<" : " << str << endl;
 }
 
 int fileCopy(const char* src, const char* dst) {
@@ -57,12 +66,12 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 		dstfull = (string)dstpath + "\\" + fd.name;
 		if (!fileExists(dstfull.c_str())) {
 			x = fileCopy(srcfull.c_str(), dstfull.c_str());
-			cout << fd.name << endl;
-			Log(fd.name);
+			cout << fd.name << "is copied." << endl;
+			Log(fd.name, "is copied.");
 		}
 		else{
-            cout << fd.name << " 이미 존재" << endl;
-            Log(fd.name);
+            cout << fd.name << " is existed." << endl;
+            Log(fd.name, " is existed.");
 		}
 		srcfull.clear();
 		dstfull.clear();
