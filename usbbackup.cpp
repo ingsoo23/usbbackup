@@ -6,7 +6,6 @@
 #include <windows.h>
 #include <io.h>
 #include <sys/stat.h>
-//nooooo
 using namespace std;
 
 bool fileExists(const char* filename) {
