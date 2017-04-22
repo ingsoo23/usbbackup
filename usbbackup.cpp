@@ -5,13 +5,21 @@
 #include <algorithm>
 #include <windows.h>
 #include <io.h>
+#include <ctime>
 #include <sys/stat.h>
+#define LOG "mybackup.log"
 using namespace std;
 
 bool fileExists(const char* filename) {
 	struct stat buf;
 	if (stat(filename, &buf) != -1) return true;
 	return false;
+}
+
+void Log(const char* str){
+    time_t t = time(0);
+    ofstream fout (LOG, ios::ate);
+    fout << t <<":" << str << endl;
 }
 
 int fileCopy(const char* src, const char* dst) {
@@ -39,6 +47,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	if (handle == -1)
 	{
 		printf("There were no files.\n");
+		Log("There were no files.\n");
 		return;
 	}
 
@@ -49,8 +58,12 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 		if (!fileExists(dstfull.c_str())) {
 			x = fileCopy(srcfull.c_str(), dstfull.c_str());
 			cout << fd.name << endl;
+			Log(fd.name);
 		}
-		else cout << fd.name << " 이미 존재" << endl;
+		else{
+            cout << fd.name << " 이미 존재" << endl;
+            Log(fd.name);
+		}
 		srcfull.clear();
 		dstfull.clear();
 		result = _findnext(handle, &fd);
