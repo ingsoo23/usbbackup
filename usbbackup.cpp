@@ -5,6 +5,12 @@
 #include <algorithm>
 #include <windows.h>
 #include <io.h>
+<<<<<<< HEAD
+
+using namespace std;
+
+void fileCopy(const char* src, const char* dst) {
+=======
 #include <ctime>
 #include <sys/stat.h>
 #define LOG "mybackup.log"
@@ -32,6 +38,7 @@ void Log(const char* str){
 }
 
 int fileCopy(const char* src, const char* dst) {
+>>>>>>> origin/master
 	ifstream fin(src, ios::binary);
 	ofstream fout(dst, ios::binary);
 
@@ -39,24 +46,38 @@ int fileCopy(const char* src, const char* dst) {
 		istreambuf_iterator<char>(fin),
 		istreambuf_iterator<char>(),
 		ostreambuf_iterator<char>(fout));
+}
 
-	return 1;
+_finddata_t findFile(const char* path, const char* filename, int& x) {
+	_finddata_t fd;
+	long handle;
+	string fullname = (string)path + "\\" + (string)filename;
+	handle = _findfirst(fullname.c_str(), &fd);
+
+	if (handle == -1) x = -1;
+	else x = 0;
+
+	return fd;
 }
 
 void allFileCopy(const char* srcpath, const char* dstpath)
 {
-	_finddata_t fd;
+	_finddata_t fd, fd2;
 	long handle;
 	int result = 1;
-	int x;
+	int a = 1;
 	string srcfile, srcfull, dstfull;
 	srcfile = (string)srcpath + "\\*.*"; // find all files in srcpath
 	handle = _findfirst(srcfile.c_str(), &fd);
 
 	if (handle == -1)
 	{
+<<<<<<< HEAD
+		cout << "There were no files.\n";
+=======
 		printf("There were no files.\n");
 		Log("There were no files.\n");
+>>>>>>> origin/master
 		return;
 	}
 
@@ -64,6 +85,20 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	{
 		srcfull = (string)srcpath + "\\" + fd.name;
 		dstfull = (string)dstpath + "\\" + fd.name;
+<<<<<<< HEAD
+		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; }
+		else {
+			fd2 = findFile(dstpath, fd.name, a);
+			if (a == -1) {
+				fileCopy(srcfull.c_str(), dstfull.c_str());
+				cout << fd.name << endl;
+			}
+			else if (fd2.time_write >= fd.time_write) cout << fd.name << "이미 존재" << endl;
+			else {
+				fileCopy(srcfull.c_str(), dstfull.c_str());
+				cout << fd.name << "수정" << endl;
+			}
+=======
 		if (!fileExists(dstfull.c_str())) {
 			x = fileCopy(srcfull.c_str(), dstfull.c_str());
 			cout << fd.name << "is copied." << endl;
@@ -72,6 +107,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 		else{
             cout << fd.name << " is existed." << endl;
             Log(fd.name, " is existed.");
+>>>>>>> origin/master
 		}
 		srcfull.clear();
 		dstfull.clear();
@@ -99,17 +135,17 @@ int isFileOrDir(char* s) {
 	return result;
 }
 
-int main(int argc, char** argv) {
-	if (argc!= 3){
-		cerr << "ERROR" << endl;
-		return -1;
-	}
-	string srcpath, dstpath;
+int main() {
+	string inst, srcpath, dstpath;
 
-	srcpath = argv[1];
-	dstpath = argv[2];
+	srcpath = "C:\\Users\\KYS\\Desktop\\src";
+	dstpath = "C:\\Users\\KYS\\Desktop\\dst";
 
-    allFileCopy(srcpath.c_str(), dstpath.c_str());
+	// cin >> inst;
+
+	// if (inst == "mybackup") {
+		allFileCopy(srcpath.c_str(), dstpath.c_str());
+	// }
 
 	return 0;
 }
