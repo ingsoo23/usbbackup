@@ -5,12 +5,11 @@
 #include <algorithm>
 #include <windows.h>
 #include <io.h>
-<<<<<<< HEAD
 
 using namespace std;
 
 void fileCopy(const char* src, const char* dst) {
-=======
+
 #include <ctime>
 #include <sys/stat.h>
 #define LOG "mybackup.log"
@@ -38,7 +37,6 @@ void Log(const char* str){
 }
 
 int fileCopy(const char* src, const char* dst) {
->>>>>>> origin/master
 	ifstream fin(src, ios::binary);
 	ofstream fout(dst, ios::binary);
 
@@ -72,12 +70,8 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 
 	if (handle == -1)
 	{
-<<<<<<< HEAD
 		cout << "There were no files.\n";
-=======
-		printf("There were no files.\n");
 		Log("There were no files.\n");
->>>>>>> origin/master
 		return;
 	}
 
@@ -85,29 +79,24 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	{
 		srcfull = (string)srcpath + "\\" + fd.name;
 		dstfull = (string)dstpath + "\\" + fd.name;
-<<<<<<< HEAD
 		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; }
 		else {
 			fd2 = findFile(dstpath, fd.name, a);
 			if (a == -1) {
 				fileCopy(srcfull.c_str(), dstfull.c_str());
 				cout << fd.name << endl;
+				Log(fd.name, "is made.");
+
 			}
-			else if (fd2.time_write >= fd.time_write) cout << fd.name << "이미 존재" << endl;
+			else if (fd2.time_write >= fd.time_write) {
+                    cout << fd.name << "이미 존재" << endl;
+                    Log(fd.name, "is existed.");
+
 			else {
 				fileCopy(srcfull.c_str(), dstfull.c_str());
-				cout << fd.name << "수정" << endl;
+				cout << fd.name << "is changed" << endl;
+				Log(fd.name, "is changed.")
 			}
-=======
-		if (!fileExists(dstfull.c_str())) {
-			x = fileCopy(srcfull.c_str(), dstfull.c_str());
-			cout << fd.name << "is copied." << endl;
-			Log(fd.name, "is copied.");
-		}
-		else{
-            cout << fd.name << " is existed." << endl;
-            Log(fd.name, " is existed.");
->>>>>>> origin/master
 		}
 		srcfull.clear();
 		dstfull.clear();
