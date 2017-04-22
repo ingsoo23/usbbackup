@@ -84,7 +84,7 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 
                 }
                 else if (fd2.time_write >= fd.time_write) {
-                        cout << fd.name << "이미 존재" << endl;
+                        cout << fd.name << "is existed" << endl;
                         Log(fd.name, "is existed.");
                 }
                 else {
@@ -94,6 +94,8 @@ void allFileCopy(const char* srcpath, const char* dstpath)
                 }
 			}
 			else if (isFileOrDir(srcfull.c_str())==0){ // it's folder
+                cout<<fd.name <<"is a folder."<< endl;
+                Log(fd.name, "is a folder.");
                 allFileCopy((srcfull +"\\"+ fd2.name).c_str(), (dstfull +"\\"+fd2.name).c_str());
 			}
 			else{// error
