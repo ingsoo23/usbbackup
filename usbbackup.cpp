@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <io.h>
 #include <sys/stat.h>
-
+//nooooo
 using namespace std;
 
 bool fileExists(const char* filename) {
@@ -78,7 +78,11 @@ int isFileOrDir(char* s) {
 	return result;
 }
 
-int main() {
+int main(int argc, char** argv) {
+	if (argc!= 3){
+		cerr << "ERROR" << endl;
+		return -1;
+	}
 	string inst, srcpath, dstpath;
 
 	srcpath = "C:\\Users\\KYS\\Desktop\\src";
