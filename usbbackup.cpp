@@ -20,14 +20,12 @@ ofstream log (LOG, ios::ate);
 void Log(const char* str1, const char* str2){
     time_t t = time(0);
     char *noew = ctime(&t);
-  //  ofstream fout (LOG, ios::ate);
     log << noew <<" : " << str1 <<str2 << endl;
 }
 
 void Log(const char* str){
     time_t t = time(0);
     char *noew = ctime(&t);
-  //  ofstream fout (LOG, ios::ate);
     log << noew <<" : " << str << endl;
 }
 
@@ -41,29 +39,30 @@ void fileCopy(const char* src, const char* dst) {
 		ostreambuf_iterator<char>(fout));
 }
 
-_finddata_t findFile(const char* path, const char* filename, int& x) {
+_finddata_t findFile(const char* path, const char* filename, int& x) { //find destination file
 	_finddata_t fd;
 	long handle;
 	string fullname = (string)path + "\\" + (string)filename;
 	handle = _findfirst(fullname.c_str(), &fd);
 
-	if (handle == -1) x = -1;
+	if (handle == -1) x = -1; //destination file is not existed.
 	else x = 0;
 
 	return fd;
 }
 
-bool dirExists(const char* dirName_in)
+bool dirExists(const char* dirName_in) // which is directory or not
 {
   DWORD ftyp = GetFileAttributesA(dirName_in);
   if (ftyp == INVALID_FILE_ATTRIBUTES)
-    return false;  //something is wrong with your path!
+    return false; //error
 
   if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-    return true;   // this is a directory!
+    return true; // it's a directory
 
-  return false;    // this is not a directory!
+  return false; // it's not a directory
 }
+
 void allFileCopy(const char* srcpath, const char* dstpath)
 {
 	_finddata_t fd, fd2;
@@ -71,17 +70,16 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	int result = 1;
 	int a = 1;
 	string srcfile, srcfull, dstfull;
-    cout<<srcpath << "\n" << dstpath << "test\n" ;
 	srcfile = (string)srcpath + "\\*.*"; // find all files in srcpath
-	if(!dirExists(dstpath)){
 
+	if(!dirExists(dstpath)){ // if dstpath is not existed, make directory.
         mkdir(dstpath);
 	}
+
 	handle = _findfirst(srcfile.c_str(), &fd);
 
 	if (handle == -1)
 	{
-		cout << "There were no files in" <<srcfile <<endl;
 		Log("There were no files.\n");
 		return;
 	}
@@ -90,36 +88,40 @@ void allFileCopy(const char* srcpath, const char* dstpath)
 	{
 		srcfull = (string)srcpath + "\\" + fd.name;
 		dstfull = (string)dstpath + "\\" + fd.name;
-		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; }
-		else {
-			fd2 = findFile(dstpath, fd.name, a);
-			if(isFileOrDir(srcfull.c_str())==1 ){ // it's file.
-                if (a == -1) {
-                    fileCopy(srcfull.c_str(), dstfull.c_str());
-                    cout << fd.name << endl;
-                    Log(fd.name, "is made.");
 
-                }
-                else if (fd2.time_write >= fd.time_write) {
-                        cout << fd.name << "is existed" << endl;
-                        Log(fd.name, "is existed.");
-                }
-                else {
+		if (!strcmp(fd.name, ".") || !strcmp(fd.name, "..")) { ; } // except ".", ".."
+
+		else {
+			fd2 = findFile(dstpath, fd.name, a); // find file fd.name in dstpath
+
+			if(isFileOrDir(srcfull.c_str())==1 ){ // when src is a file.
+
+                if (a == -1) { //fd.name is not existed in dstpath
                     fileCopy(srcfull.c_str(), dstfull.c_str());
-                    cout << fd.name << "is changed" << endl;
-                    Log(fd.name, "is changed.");
+                    Log(fd.name, " is made.");
+                }
+
+                else if (fd2.time_write >= fd.time_write) { // if dst changed after src changed
+                        Log(fd.name, " is existed.");
+                }
+
+                else { //backup file
+                    fileCopy(srcfull.c_str(), dstfull.c_str());
+                    Log(fd.name, " is changed.");
                 }
 			}
-			else if (isFileOrDir(srcfull.c_str())==0){ // it's folder
-                cout<<fd.name <<"is a folder."<< endl;
-                Log(fd.name, "is a folder.");
-                mkdir((dstfull).c_str());
-                allFileCopy((srcfull).c_str(), (dstfull).c_str());
+
+			else if (isFileOrDir(srcfull.c_str())==0){ // when src is a folder.
+                Log(fd.name, " is a folder.");
+                mkdir((dstfull).c_str()); //make a folder in dst
+                allFileCopy((srcfull).c_str(), (dstfull).c_str()); //recursive
 			}
+
 			else{// error
                 Log("ERROR");
 			}
 		}
+
 		srcfull.clear();
 		dstfull.clear();
 		result = _findnext(handle, &fd);
@@ -135,11 +137,13 @@ int isFileOrDir(const char* s) {
 	int result;
 
 	if ((hFile = _findfirst(s, &c_file)) == -1L)
-		result = -1; // 파일 또는 디렉토리가 없으면 -1 반환
+		result = -1; // if no file or directory
+
 	else if (c_file.attrib & _A_SUBDIR)
-		result = 0; // 디렉토리면 0 반환
+		result = 0; // if it's a directory
+
 	else
-		result = 1; // 그밖의 경우는 "존재하는 파일"이기에 1 반환
+		result = 1; // if it's a file
 
 	_findclose(hFile);
 
